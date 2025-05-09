@@ -1,0 +1,195 @@
+{% extends 'medical/base.html' %}
+
+{% block title %}Контакты - Поликлиника{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">Контактная информация</h1>
+    
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h4 class="mb-0">Наши контакты</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-map-marker-alt fa-2x text-primary"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h5>Адрес</h5>
+                                    <p class="mb-0">г. Москва, ул. Примерная, д. 123</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-phone fa-2x text-primary"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h5>Телефоны</h5>
+                                    <p>Регистратура: +7 (123) 456-78-90</p>
+                                    <p>Справочная: +7 (123) 456-78-91</p>
+                                    <p class="mb-0">Экстренная помощь: +7 (123) 456-78-92</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-envelope fa-2x text-primary"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h5>Email</h5>
+                                    <p class="mb-0">info@clinic.ru</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-clock fa-2x text-primary"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h5>Режим работы</h5>
+                                    <p>Понедельник - Пятница: 8:00 - 20:00</p>
+                                    <p>Суббота: 9:00 - 18:00</p>
+                                    <p class="mb-0">Воскресенье: Выходной</p>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h4 class="mb-0">Напишите нам</h4>
+                </div>
+                <div class="card-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Ваше имя</label>
+                            <input type="text" class="form-control" id="name" placeholder="Введите ваше имя" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" placeholder="Введите ваш email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="subject" class="form-label">Тема</label>
+                            <input type="text" class="form-control" id="subject" placeholder="Введите тему сообщения" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Сообщение</label>
+                            <textarea class="form-control" id="message" rows="5" placeholder="Введите ваше сообщение" required></textarea>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Отправить сообщение</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4 class="mb-0">Как нас найти</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <h5>Общественный транспорт</h5>
+                    <ul>
+                        <li>Метро: станция "Примерная", выход №2</li>
+                        <li>Автобусы: №123, №456, №789</li>
+                        <li>Троллейбусы: №45, №67</li>
+                        <li>Трамваи: №12, №34</li>
+                    </ul>
+                    
+                    <h5>На автомобиле</h5>
+                    <p>Удобный подъезд с улицы Примерной. Рядом с поликлиникой есть платная парковка.</p>
+                </div>
+                <div class="col-md-6">
+                    <!-- Здесь будет карта -->
+                    <div class="bg-light p-3 text-center" style="height: 300px;">
+                        <i class="fas fa-map-marked-alt fa-4x text-primary mb-3"></i>
+                        <h5>Интерактивная карта</h5>
+                        <p class="mb-0">Здесь будет размещена интерактивная карта с местоположением поликлиники.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h4 class="mb-0">Часто задаваемые вопросы</h4>
+        </div>
+        <div class="card-body">
+            <div class="accordion" id="faqAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            Как записаться на прием к врачу?
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Записаться на прием к врачу можно несколькими способами:
+                            <ul>
+                                <li>Через наш сайт в разделе "Врачи"</li>
+                                <li>По телефону регистратуры: +7 (123) 456-78-90</li>
+                                <li>Лично в регистратуре поликлиники</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingTwo">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            Какие документы нужны для посещения врача?
+                        </button>
+                    </h2>
+                    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Для посещения врача вам понадобятся:
+                            <ul>
+                                <li>Паспорт</li>
+                                <li>Полис ОМС</li>
+                                <li>СНИЛС</li>
+                                <li>Направление от терапевта (если необходимо)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                            Как отменить или перенести запись на прием?
+                        </button>
+                    </h2>
+                    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Отменить или перенести запись на прием можно:
+                            <ul>
+                                <li>В личном кабинете на нашем сайте</li>
+                                <li>По телефону регистратуры: +7 (123) 456-78-90</li>
+                                <li>Лично в регистратуре поликлиники</li>
+                            </ul>
+                            Пожалуйста, сообщайте об отмене записи заранее, чтобы мы могли предложить это время другим пациентам.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

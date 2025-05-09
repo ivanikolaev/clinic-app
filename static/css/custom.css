@@ -1,0 +1,188 @@
+/* Custom CSS for Clinic Application */
+
+/* Color variables */
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2c3e50;
+    --accent-color: #e74c3c;
+    --light-color: #ecf0f1;
+    --dark-color: #2c3e50;
+    --success-color: #2ecc71;
+    --warning-color: #f39c12;
+    --danger-color: #e74c3c;
+    --info-color: #3498db;
+}
+
+/* General styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Navbar styles */
+.navbar {
+    background-color: var(--primary-color);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    color: white !important;
+}
+
+.nav-link {
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.nav-link:hover {
+    color: white !important;
+}
+
+/* Button styles */
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+    border-color: #2980b9;
+}
+
+/* Card styles */
+.card {
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+    margin-bottom: 20px;
+}
+
+.card-header {
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 8px 8px 0 0 !important;
+}
+
+/* Footer styles */
+footer {
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 20px 0;
+    margin-top: auto;
+}
+
+/* Hero section styles */
+.hero-section {
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/static/images/hero-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 100px 0;
+    text-align: center;
+}
+
+/* Doctor card styles */
+.doctor-card .fa-user-md {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+}
+
+/* Department icon styles */
+.department-icon {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 15px;
+}
+
+/* Alert container styles */
+.alert-container {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 9999;
+    max-width: 350px;
+}
+
+/* Appointment status styles */
+.appointment-status-scheduled {
+    background-color: var(--info-color);
+    color: white;
+}
+
+.appointment-status-completed {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.appointment-status-cancelled {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.appointment-status-no_show {
+    background-color: var(--warning-color);
+    color: white;
+}
+
+/* Schedule table styles */
+.schedule-table th, .schedule-table td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.schedule-working {
+    background-color: rgba(52, 152, 219, 0.1);
+}
+
+.schedule-non-working {
+    background-color: rgba(231, 76, 60, 0.1);
+}
+
+/* Time slot styles */
+.time-slot {
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.time-slot:hover {
+    background-color: rgba(52, 152, 219, 0.1);
+}
+
+.time-slot.selected {
+    background-color: rgba(52, 152, 219, 0.2);
+    border-color: #3498db;
+}
+
+/* Admin dashboard styles */
+.admin-stat-card {
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 60px 0;
+    }
+    
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+    
+    .card-deck .card {
+        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 576px) {
+    .doctor-card .fa-user-md {
+        font-size: 3rem;
+    }
+}

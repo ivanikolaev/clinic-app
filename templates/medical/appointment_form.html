@@ -1,0 +1,282 @@
+{% extends 'medical/base.html' %}
+
+{% block title %}Запись на прием - Поликлиника{% endblock %}
+
+{% block extra_css %}
+<style>
+    .time-slot {
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .time-slot:hover {
+        background-color: rgba(52, 152, 219, 0.1);
+    }
+    
+    .time-slot.selected {
+        background-color: rgba(52, 152, 219, 0.2);
+        border-color: #3498db;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Главная</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'doctor_list' %}">Врачи</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'doctor_detail' doctor.pk %}">{{ doctor.full_name }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Запись на прием</li>
+        </ol>
+    </nav>
+    
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    {% if doctor.specialization == 'Терапевт' %}
+                        <i class="fas fa-stethoscope fa-5x text-primary mb-3"></i>
+                    {% elif doctor.specialization == 'Кардиолог' %}
+                        <i class="fas fa-heartbeat fa-5x text-primary mb-3"></i>
+                    {% elif doctor.specialization == 'Невролог' %}
+                        <i class="fas fa-brain fa-5x text-primary mb-3"></i>
+                    {% elif doctor.specialization == 'Хирург' %}
+                        <i class="fas fa-procedures fa-5x text-primary mb-3"></i>
+                    {% elif doctor.specialization == 'Педиатр' %}
+                        <i class="fas fa-baby fa-5x text-primary mb-3"></i>
+                    {% elif doctor.specialization == 'Психотерапевт' %}
+                        <i class="fas fa-comments fa-5x text-primary mb-3"></i>
+                    {% elif doctor.specialization == 'Инфекционист' %}
+                        <i class="fas fa-virus fa-5x text-primary mb-3"></i>
+                    {% elif doctor.specialization == 'Стоматолог' %}
+                        <i class="fas fa-tooth fa-5x text-primary mb-3"></i>
+                    {% elif doctor.specialization == 'Венеролог' %}
+                        <i class="fas fa-microscope fa-5x text-primary mb-3"></i>
+                    {% else %}
+                        <i class="fas fa-user-md fa-5x text-primary mb-3"></i>
+                    {% endif %}
+                    <h4>{{ doctor.full_name }}</h4>
+                    <p class="text-muted">{{ doctor.specialization }}</p>
+                    <p><i class="fas fa-briefcase me-2"></i>Опыт работы: {{ doctor.experience }} лет</p>
+                    <p><i class="fas fa-hospital me-2"></i>Отделение: {{ doctor.department.name }}</p>
+                </div>
+            </div>
+            
+            {% if doctor.schedules.all %}
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">График работы</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered text-center">
+                                <thead>
+                                    <tr>
+                                        <th>День недели</th>
+                                        <th>Время</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for schedule in doctor.schedules.all %}
+                                        <tr class="{% if schedule.is_working_day %}table-light{% else %}table-secondary{% endif %}">
+                                            <td>{{ schedule.get_day_of_week_display }}</td>
+                                            <td>
+                                                {% if schedule.is_working_day %}
+                                                    {{ schedule.start_time|time:"H:i" }} - {{ schedule.end_time|time:"H:i" }}
+                                                {% else %}
+                                                    Выходной
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Запись на прием</h4>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                    <form method="post" id="appointmentForm">
+                        {% csrf_token %}
+                        <input type="hidden" id="doctorId" value="{{ doctor.id }}">
+                        
+                        <div class="mb-4">
+                            <label for="id_date" class="form-label">Выберите дату приема</label>
+                            <input type="date" name="date" id="id_date" class="form-control" required>
+                            {% if form.date.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.date.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">Выберите дату для просмотра доступных слотов времени</div>
+                        </div>
+                        
+                        <div class="mb-4" id="timeSlotContainer" style="display: none;">
+                            <label class="form-label">Выберите время приема</label>
+                            <div class="row" id="timeSlots">
+                                <!-- Здесь будут отображаться доступные слоты времени -->
+                            </div>
+                            <input type="hidden" name="time" id="id_time" required>
+                            {% if form.time.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.time.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="id_reason" class="form-label">Причина обращения</label>
+                            <textarea name="reason" id="id_reason" class="form-control" rows="3">{{ form.reason.value|default:'' }}</textarea>
+                            {% if form.reason.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.reason.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'doctor_detail' doctor.pk %}" class="btn btn-outline-secondary">Отмена</a>
+                            <button type="submit" class="btn btn-primary" id="submitBtn" disabled>Записаться на прием</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Функция для загрузки доступных слотов времени
+        function loadTimeSlots(date) {
+            const doctorId = document.getElementById('doctorId').value;
+            
+            if (date) {
+                // Очищаем предыдущий выбор
+                $('#id_time').val('');
+                $('#submitBtn').prop('disabled', true);
+                
+                $.ajax({
+                    url: '{% url "api_available_slots" %}',
+                    data: {
+                        'doctor_id': doctorId,
+                        'date': date
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        const timeSlotsContainer = $('#timeSlots');
+                        timeSlotsContainer.empty();
+                        
+                        if (data.slots && data.slots.length > 0) {
+                            $('#timeSlotContainer').show();
+                            
+                            data.slots.forEach(function(slot) {
+                                // Преобразуем время из формата HH:MM:SS в HH:MM
+                                const time = slot.substring(0, 5);
+                                
+                                const timeSlot = $(`
+                                    <div class="col-md-3 col-6 mb-2">
+                                        <div class="card time-slot" data-time="${slot}">
+                                            <div class="card-body text-center py-2">
+                                                ${time}
+                                            </div>
+                                        </div>
+                                    </div>
+                                `);
+                                
+                                timeSlotsContainer.append(timeSlot);
+                            });
+                            
+                            // Обработчик выбора времени
+                            $('.time-slot').click(function() {
+                                $('.time-slot').removeClass('selected');
+                                $(this).addClass('selected');
+                                
+                                const selectedTime = $(this).data('time');
+                                $('#id_time').val(selectedTime);
+                                $('#submitBtn').prop('disabled', false);
+                            });
+                        } else {
+                            $('#timeSlotContainer').show();
+                            timeSlotsContainer.html(`
+                                <div class="col-12">
+                                    <div class="alert alert-info">
+                                        На выбранную дату нет доступных слотов времени. Пожалуйста, выберите другую дату.
+                                    </div>
+                                </div>
+                            `);
+                        }
+                    },
+                    error: function() {
+                        $('#timeSlotContainer').show();
+                        $('#timeSlots').html(`
+                            <div class="col-12">
+                                <div class="alert alert-danger">
+                                    Произошла ошибка при загрузке доступных слотов времени. Пожалуйста, попробуйте еще раз.
+                                </div>
+                            </div>
+                        `);
+                    }
+                });
+            } else {
+                $('#timeSlotContainer').hide();
+                $('#timeSlots').empty();
+                $('#id_time').val('');
+                $('#submitBtn').prop('disabled', true);
+            }
+        }
+        
+        // Обработчик изменения даты
+        $('#id_date').change(function() {
+            loadTimeSlots($(this).val());
+        });
+        
+        // Валидация формы перед отправкой
+        $('#appointmentForm').submit(function(e) {
+            if (!$('#id_date').val() || !$('#id_time').val()) {
+                e.preventDefault();
+                alert('Пожалуйста, выберите дату и время приема.');
+            }
+        });
+        
+        // Если дата уже выбрана (например, после перезагрузки страницы с ошибкой),
+        // загружаем доступные слоты времени
+        const savedDate = $('#id_date').val();
+        if (savedDate) {
+            loadTimeSlots(savedDate);
+        }
+    });
+</script>
+{% endblock %}

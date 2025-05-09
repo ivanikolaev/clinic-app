@@ -1,0 +1,178 @@
+{% extends 'medical/base.html' %}
+
+{% block title %}Информация о записи - Поликлиника{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Главная</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'appointment_list' %}">Мои записи</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Информация о записи</li>
+        </ol>
+    </nav>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Информация о записи</h4>
+                    <span class="badge appointment-status-{{ appointment.status }}">
+                        {{ appointment.get_status_display }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Информация о приеме</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th>Дата:</th>
+                                    <td>{{ appointment.date|date:"d.m.Y" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Время:</th>
+                                    <td>{{ appointment.time|time:"H:i" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Статус:</th>
+                                    <td>
+                                        <span class="badge appointment-status-{{ appointment.status }}">
+                                            {{ appointment.get_status_display }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% if appointment.reason %}
+                                    <tr>
+                                        <th>Причина обращения:</th>
+                                        <td>{{ appointment.reason }}</td>
+                                    </tr>
+                                {% endif %}
+                                {% if appointment.notes %}
+                                    <tr>
+                                        <th>Комментарии:</th>
+                                        <td>{{ appointment.notes }}</td>
+                                    </tr>
+                                {% endif %}
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Информация о враче</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th>Врач:</th>
+                                    <td>{{ appointment.doctor.full_name }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Специализация:</th>
+                                    <td>{{ appointment.doctor.specialization }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Отделение:</th>
+                                    <td>{{ appointment.doctor.department.name }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    {% if appointment.status == 'scheduled' %}
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'appointment_cancel' appointment.pk %}" class="btn btn-danger">
+                                <i class="fas fa-times me-2"></i>Отменить запись
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            {% if medical_record %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4 class="mb-0">Медицинская запись</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <h5>Диагноз</h5>
+                            <p>{{ medical_record.diagnosis|linebreaks }}</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h5>Назначенное лечение</h5>
+                            <p>{{ medical_record.treatment|linebreaks }}</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h5>Рекомендации</h5>
+                            <p>{{ medical_record.recommendations|linebreaks }}</p>
+                        </div>
+                        
+                        <div class="text-muted">
+                            <small>Запись создана: {{ medical_record.created_at|date:"d.m.Y H:i" }}</small>
+                            {% if medical_record.created_at != medical_record.updated_at %}
+                                <br>
+                                <small>Последнее обновление: {{ medical_record.updated_at|date:"d.m.Y H:i" }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Информация о пациенте</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-user-circle fa-5x text-primary"></i>
+                    </div>
+                    <table class="table table-borderless">
+                        <tr>
+                            <th>ФИО:</th>
+                            <td>{{ appointment.patient.full_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Дата рождения:</th>
+                            <td>{{ appointment.patient.date_of_birth|date:"d.m.Y" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Телефон:</th>
+                            <td>{{ appointment.patient.phone_number }}</td>
+                        </tr>
+                        {% if appointment.patient.email %}
+                            <tr>
+                                <th>Email:</th>
+                                <td>{{ appointment.patient.email }}</td>
+                            </tr>
+                        {% endif %}
+                        <tr>
+                            <th>Номер полиса:</th>
+                            <td>{{ appointment.patient.insurance_number }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Быстрые действия</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'appointment_list' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-list me-2"></i>Все записи
+                        </a>
+                        <a href="{% url 'doctor_detail' appointment.doctor.pk %}" class="btn btn-outline-primary">
+                            <i class="fas fa-user-md me-2"></i>Профиль врача
+                        </a>
+                        <a href="{% url 'doctor_list' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-calendar-plus me-2"></i>Новая запись
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

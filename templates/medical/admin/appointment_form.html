@@ -1,0 +1,307 @@
+{% extends 'medical/base.html' %}
+
+{% block title %}Редактирование записи - Панель администратора{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Главная</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'admin_dashboard' %}">Панель администратора</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Редактирование записи</li>
+        </ol>
+    </nav>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4 class="mb-0">Редактирование записи на прием</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5>Информация о пациенте и враче</h5>
+                                <hr>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.patient.id_for_label }}" class="form-label">{{ form.patient.label }}</label>
+                                {{ form.patient }}
+                                {% if form.patient.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.patient.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.doctor.id_for_label }}" class="form-label">{{ form.doctor.label }}</label>
+                                {{ form.doctor }}
+                                {% if form.doctor.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.doctor.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5>Информация о приеме</h5>
+                                <hr>
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.date.id_for_label }}" class="form-label">{{ form.date.label }}</label>
+                                {{ form.date }}
+                                {% if form.date.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.date.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.time.id_for_label }}" class="form-label">{{ form.time.label }}</label>
+                                {{ form.time }}
+                                {% if form.time.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.time.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.status.id_for_label }}" class="form-label">{{ form.status.label }}</label>
+                                {{ form.status }}
+                                {% if form.status.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.status.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-12 mb-3">
+                                <label for="{{ form.reason.id_for_label }}" class="form-label">{{ form.reason.label }}</label>
+                                {{ form.reason }}
+                                {% if form.reason.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.reason.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-12 mb-3">
+                                <label for="{{ form.notes.id_for_label }}" class="form-label">{{ form.notes.label }}</label>
+                                {{ form.notes }}
+                                {% if form.notes.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.notes.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-secondary">Отмена</a>
+                            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            {% if object.status == 'completed' %}
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="mb-0">Медицинская запись</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="medical_record_form" value="1">
+                            
+                            <div class="mb-3">
+                                <label for="{{ medical_record_form.diagnosis.id_for_label }}" class="form-label">{{ medical_record_form.diagnosis.label }}</label>
+                                {{ medical_record_form.diagnosis }}
+                                {% if medical_record_form.diagnosis.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in medical_record_form.diagnosis.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="{{ medical_record_form.treatment.id_for_label }}" class="form-label">{{ medical_record_form.treatment.label }}</label>
+                                {{ medical_record_form.treatment }}
+                                {% if medical_record_form.treatment.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in medical_record_form.treatment.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="{{ medical_record_form.recommendations.id_for_label }}" class="form-label">{{ medical_record_form.recommendations.label }}</label>
+                                {{ medical_record_form.recommendations }}
+                                {% if medical_record_form.recommendations.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in medical_record_form.recommendations.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-success">Сохранить медицинскую запись</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Информация о пациенте</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-user-circle fa-5x text-primary"></i>
+                    </div>
+                    
+                    {% if object.patient %}
+                        <table class="table table-borderless">
+                            <tr>
+                                <th>ФИО:</th>
+                                <td>{{ object.patient.full_name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Дата рождения:</th>
+                                <td>{{ object.patient.date_of_birth|date:"d.m.Y" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Телефон:</th>
+                                <td>{{ object.patient.phone_number }}</td>
+                            </tr>
+                            {% if object.patient.email %}
+                                <tr>
+                                    <th>Email:</th>
+                                    <td>{{ object.patient.email }}</td>
+                                </tr>
+                            {% endif %}
+                            <tr>
+                                <th>Номер полиса:</th>
+                                <td>{{ object.patient.insurance_number }}</td>
+                            </tr>
+                        </table>
+                        
+                        <div class="d-grid mt-3">
+                            <a href="{% url 'admin:medical_patient_change' object.patient.id %}" class="btn btn-outline-primary">
+                                <i class="fas fa-edit me-2"></i>Редактировать пациента
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <p class="mb-0">Выберите пациента для отображения информации.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Информация о враче</h5>
+                </div>
+                <div class="card-body">
+                    {% if object.doctor %}
+                        <div class="text-center mb-4">
+                            {% if object.doctor.specialization == 'Терапевт' %}
+                                <i class="fas fa-stethoscope fa-5x text-primary"></i>
+                            {% elif object.doctor.specialization == 'Кардиолог' %}
+                                <i class="fas fa-heartbeat fa-5x text-primary"></i>
+                            {% elif object.doctor.specialization == 'Невролог' %}
+                                <i class="fas fa-brain fa-5x text-primary"></i>
+                            {% elif object.doctor.specialization == 'Хирург' %}
+                                <i class="fas fa-procedures fa-5x text-primary"></i>
+                            {% elif object.doctor.specialization == 'Педиатр' %}
+                                <i class="fas fa-baby fa-5x text-primary"></i>
+                            {% elif object.doctor.specialization == 'Психотерапевт' %}
+                                <i class="fas fa-comments fa-5x text-primary"></i>
+                            {% elif object.doctor.specialization == 'Инфекционист' %}
+                                <i class="fas fa-virus fa-5x text-primary"></i>
+                            {% elif object.doctor.specialization == 'Стоматолог' %}
+                                <i class="fas fa-tooth fa-5x text-primary"></i>
+                            {% elif object.doctor.specialization == 'Венеролог' %}
+                                <i class="fas fa-microscope fa-5x text-primary"></i>
+                            {% else %}
+                                <i class="fas fa-user-md fa-5x text-primary"></i>
+                            {% endif %}
+                        </div>
+                        
+                        <table class="table table-borderless">
+                            <tr>
+                                <th>ФИО:</th>
+                                <td>{{ object.doctor.full_name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Специализация:</th>
+                                <td>{{ object.doctor.specialization }}</td>
+                            </tr>
+                            <tr>
+                                <th>Опыт работы:</th>
+                                <td>{{ object.doctor.experience }} лет</td>
+                            </tr>
+                            <tr>
+                                <th>Отделение:</th>
+                                <td>{{ object.doctor.department.name }}</td>
+                            </tr>
+                        </table>
+                        
+                        <div class="d-grid mt-3">
+                            <a href="{% url 'admin:medical_doctor_change' object.doctor.id %}" class="btn btn-outline-primary">
+                                <i class="fas fa-edit me-2"></i>Редактировать врача
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <p class="mb-0">Выберите врача для отображения информации.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

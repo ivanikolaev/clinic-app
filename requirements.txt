@@ -1,0 +1,12 @@
+# Django and core dependencies
+Django==5.2.1
+Pillow==11.2.1
+django-crispy-forms==2.4
+django-filter==25.1
+
+# Database
+psycopg2-binary==2.9.10  # For PostgreSQL
+
+# Utilities
+asgiref==3.8.1
+sqlparse==0.5.3

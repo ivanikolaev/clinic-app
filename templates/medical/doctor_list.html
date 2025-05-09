@@ -1,0 +1,78 @@
+{% extends 'medical/base.html' %}
+
+{% block title %}Врачи - Поликлиника{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">Наши врачи</h1>
+    
+    <!-- Фильтры -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Фильтры</h5>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-5">
+                    <label for="{{ form.department.id_for_label }}" class="form-label">Отделение</label>
+                    {{ form.department }}
+                </div>
+                <div class="col-md-5">
+                    <label for="{{ form.specialization.id_for_label }}" class="form-label">Специализация</label>
+                    {{ form.specialization }}
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Применить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Список врачей -->
+    <div class="row">
+        {% for doctor in doctors %}
+            <div class="col-md-3 mb-4">
+                <div class="card h-100 doctor-card">
+                    <div class="card-body text-center">
+                        {% if doctor.specialization == 'Терапевт' %}
+                            <i class="fas fa-stethoscope fa-4x text-primary mb-3"></i>
+                        {% elif doctor.specialization == 'Кардиолог' %}
+                            <i class="fas fa-heartbeat fa-4x text-primary mb-3"></i>
+                        {% elif doctor.specialization == 'Невролог' %}
+                            <i class="fas fa-brain fa-4x text-primary mb-3"></i>
+                        {% elif doctor.specialization == 'Хирург' %}
+                            <i class="fas fa-procedures fa-4x text-primary mb-3"></i>
+                        {% elif doctor.specialization == 'Педиатр' %}
+                            <i class="fas fa-baby fa-4x text-primary mb-3"></i>
+                        {% elif doctor.specialization == 'Психотерапевт' %}
+                            <i class="fas fa-comments fa-4x text-primary mb-3"></i>
+                        {% elif doctor.specialization == 'Инфекционист' %}
+                            <i class="fas fa-virus fa-4x text-primary mb-3"></i>
+                        {% elif doctor.specialization == 'Стоматолог' %}
+                            <i class="fas fa-tooth fa-4x text-primary mb-3"></i>
+                        {% elif doctor.specialization == 'Венеролог' %}
+                            <i class="fas fa-microscope fa-4x text-primary mb-3"></i>
+                        {% else %}
+                            <i class="fas fa-user-md fa-4x text-primary mb-3"></i>
+                        {% endif %}
+                        <h5 class="card-title">{{ doctor.full_name }}</h5>
+                        <p class="card-text text-muted">{{ doctor.specialization }}</p>
+                        <p class="card-text"><small class="text-muted">Опыт работы: {{ doctor.experience }} лет</small></p>
+                        <p class="card-text"><small class="text-muted">Отделение: {{ doctor.department.name }}</small></p>
+                    </div>
+                    <div class="card-footer bg-white border-0">
+                        <a href="{% url 'doctor_detail' doctor.pk %}" class="btn btn-outline-primary w-100">Подробнее</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <p class="mb-0">По вашему запросу врачи не найдены. Попробуйте изменить параметры фильтрации.</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+</div>
+{% endblock %}

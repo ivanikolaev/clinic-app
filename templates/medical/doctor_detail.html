@@ -1,0 +1,240 @@
+{% extends 'medical/base.html' %}
+
+{% block title %}{{ doctor.full_name }} - Поликлиника{% endblock %}
+
+{% block extra_css %}
+<style>
+    .schedule-table th, .schedule-table td {
+        text-align: center;
+        vertical-align: middle;
+    }
+    
+    .schedule-working {
+        background-color: rgba(52, 152, 219, 0.1);
+    }
+    
+    .schedule-non-working {
+        background-color: rgba(231, 76, 60, 0.1);
+    }
+    
+    .appointment-form {
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Главная</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'doctor_list' %}">Врачи</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ doctor.full_name }}</li>
+        </ol>
+    </nav>
+    
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    {% if doctor.specialization == 'Терапевт' %}
+                        <i class="fas fa-stethoscope fa-5x text-primary mb-3"></i>
+                    {% elif doctor.specialization == 'Кардиолог' %}
+                        <i class="fas fa-heartbeat fa-5x text-primary mb-3"></i>
+                    {% elif doctor.specialization == 'Невролог' %}
+                        <i class="fas fa-brain fa-5x text-primary mb-3"></i>
+                    {% elif doctor.specialization == 'Хирург' %}
+                        <i class="fas fa-procedures fa-5x text-primary mb-3"></i>
+                    {% elif doctor.specialization == 'Педиатр' %}
+                        <i class="fas fa-baby fa-5x text-primary mb-3"></i>
+                    {% elif doctor.specialization == 'Психотерапевт' %}
+                        <i class="fas fa-comments fa-5x text-primary mb-3"></i>
+                    {% elif doctor.specialization == 'Инфекционист' %}
+                        <i class="fas fa-virus fa-5x text-primary mb-3"></i>
+                    {% elif doctor.specialization == 'Стоматолог' %}
+                        <i class="fas fa-tooth fa-5x text-primary mb-3"></i>
+                    {% elif doctor.specialization == 'Венеролог' %}
+                        <i class="fas fa-microscope fa-5x text-primary mb-3"></i>
+                    {% else %}
+                        <i class="fas fa-user-md fa-5x text-primary mb-3"></i>
+                    {% endif %}
+                    <h3>{{ doctor.full_name }}</h3>
+                    <p class="text-muted">{{ doctor.specialization }}</p>
+                    <p><i class="fas fa-briefcase me-2"></i>Опыт работы: {{ doctor.experience }} лет</p>
+                    <p><i class="fas fa-hospital me-2"></i>Отделение: <a href="{% url 'department_detail' doctor.department.pk %}">{{ doctor.department.name }}</a></p>
+                    
+                    {% if user.is_authenticated and patient %}
+                        <button id="showAppointmentForm" class="btn btn-primary w-100 mt-3">Записаться на прием</button>
+                    {% elif user.is_authenticated %}
+                        <a href="{% url 'patient_profile_create' %}" class="btn btn-primary w-100 mt-3">Заполните профиль для записи</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-primary w-100 mt-3">Войдите для записи на прием</a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            {% if schedules %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">График работы</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered schedule-table">
+                                <thead>
+                                    <tr>
+                                        <th>День недели</th>
+                                        <th>Время</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for schedule in schedules %}
+                                        <tr class="{% if schedule.is_working_day %}schedule-working{% else %}schedule-non-working{% endif %}">
+                                            <td>{{ schedule.get_day_of_week_display }}</td>
+                                            <td>
+                                                {% if schedule.is_working_day %}
+                                                    {{ schedule.start_time|time:"H:i" }} - {{ schedule.end_time|time:"H:i" }}
+                                                {% else %}
+                                                    Выходной
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">О враче</h5>
+                </div>
+                <div class="card-body">
+                    {% if doctor.bio %}
+                        <p>{{ doctor.bio|linebreaks }}</p>
+                    {% else %}
+                        <p>Информация о враче не предоставлена.</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            {% if doctor.education %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Образование и квалификация</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>{{ doctor.education|linebreaks }}</p>
+                    </div>
+                </div>
+            {% endif %}
+            
+            {% if user.is_authenticated and patient %}
+                <div id="appointmentFormCard" class="card mb-4 appointment-form">
+                    <div class="card-header">
+                        <h5 class="mb-0">Запись на прием</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="{% url 'appointment_create' doctor.pk %}" id="appointmentForm">
+                            {% csrf_token %}
+                            <input type="hidden" id="doctorId" value="{{ doctor.id }}">
+                            
+                            <div class="mb-3">
+                                <label for="id_date" class="form-label">Дата приема</label>
+                                <input type="date" name="date" id="id_date" class="form-control" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="id_time" class="form-label">Время приема</label>
+                                <select name="time" id="id_time" class="form-control" required disabled>
+                                    <option value="">Сначала выберите дату</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="id_reason" class="form-label">Причина обращения</label>
+                                <textarea name="reason" id="id_reason" class="form-control" rows="3"></textarea>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between">
+                                <button type="button" id="cancelAppointment" class="btn btn-outline-secondary">Отмена</button>
+                                <button type="submit" class="btn btn-primary">Записаться</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if user.is_authenticated and patient %}
+<script>
+    $(document).ready(function() {
+        // Показать/скрыть форму записи
+        $('#showAppointmentForm').click(function() {
+            $('#appointmentFormCard').slideDown();
+            $(this).hide();
+        });
+        
+        $('#cancelAppointment').click(function() {
+            $('#appointmentFormCard').slideUp();
+            $('#showAppointmentForm').show();
+        });
+        
+        // Получение доступных слотов времени при выборе даты
+        $('#id_date').change(function() {
+            const date = $(this).val();
+            const doctorId = document.getElementById('doctorId').value;
+            
+            if (date) {
+                $.ajax({
+                    url: '{% url "api_available_slots" %}',
+                    data: {
+                        'doctor_id': doctorId,
+                        'date': date
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        const timeSelect = $('#id_time');
+                        timeSelect.empty();
+                        
+                        if (data.slots && data.slots.length > 0) {
+                            timeSelect.append('<option value="">Выберите время</option>');
+                            
+                            data.slots.forEach(function(slot) {
+                                // Преобразуем время из формата HH:MM:SS в HH:MM
+                                const time = slot.substring(0, 5);
+                                timeSelect.append(`<option value="${slot}">${time}</option>`);
+                            });
+                            
+                            timeSelect.prop('disabled', false);
+                        } else {
+                            timeSelect.append('<option value="">Нет доступных слотов на эту дату</option>');
+                            timeSelect.prop('disabled', true);
+                        }
+                    },
+                    error: function() {
+                        const timeSelect = $('#id_time');
+                        timeSelect.empty();
+                        timeSelect.append('<option value="">Ошибка загрузки данных</option>');
+                        timeSelect.prop('disabled', true);
+                    }
+                });
+            } else {
+                const timeSelect = $('#id_time');
+                timeSelect.empty();
+                timeSelect.append('<option value="">Сначала выберите дату</option>');
+                timeSelect.prop('disabled', true);
+            }
+        });
+    });
+</script>
+{% endif %}
+{% endblock %}

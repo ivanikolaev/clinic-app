@@ -1,0 +1,142 @@
+{% extends 'medical/base.html' %}
+
+{% block title %}Мой профиль - Поликлиника{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4 class="mb-0">Личная информация</h4>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-user-circle fa-5x text-primary"></i>
+                    </div>
+                    <h5 class="text-center mb-3">{{ patient.full_name }}</h5>
+                    <p class="text-center text-muted">{{ patient.user.email }}</p>
+                    <hr>
+                    <div class="d-grid">
+                        <a href="{% url 'patient_profile_update' %}" class="btn btn-primary">
+                            <i class="fas fa-edit me-2"></i>Редактировать профиль
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Быстрые действия</h4>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'doctor_list' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-search me-2"></i>Найти врача
+                        </a>
+                        <a href="{% url 'appointment_list' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-calendar-check me-2"></i>Мои записи
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Детальная информация</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h5>Личные данные</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th>ФИО:</th>
+                                    <td>{{ patient.full_name }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Дата рождения:</th>
+                                    <td>{{ patient.date_of_birth|date:"d.m.Y" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Номер полиса:</th>
+                                    <td>{{ patient.insurance_number }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Контактная информация</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th>Телефон:</th>
+                                    <td>{{ patient.phone_number }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Email:</th>
+                                    <td>{{ patient.email|default:"Не указан" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Адрес:</th>
+                                    <td>{{ patient.address|default:"Не указан" }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <h5>Последние записи на прием</h5>
+                            {% if patient.appointments.all %}
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Врач</th>
+                                                <th>Дата и время</th>
+                                                <th>Статус</th>
+                                                <th>Действия</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for appointment in patient.appointments.all|dictsortreversed:"date"|slice:":5" %}
+                                                <tr>
+                                                    <td>{{ appointment.doctor.full_name }}</td>
+                                                    <td>{{ appointment.date|date:"d.m.Y" }} {{ appointment.time|time:"H:i" }}</td>
+                                                    <td>
+                                                        <span class="badge appointment-status-{{ appointment.status }}">
+                                                            {{ appointment.get_status_display }}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <a href="{% url 'appointment_detail' appointment.pk %}" class="btn btn-sm btn-outline-primary">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                        {% if appointment.status == 'scheduled' %}
+                                                            <a href="{% url 'appointment_cancel' appointment.pk %}" class="btn btn-sm btn-outline-danger">
+                                                                <i class="fas fa-times"></i>
+                                                            </a>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="text-center mt-3">
+                                    <a href="{% url 'appointment_list' %}" class="btn btn-outline-primary">Все записи</a>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-info">
+                                    У вас пока нет записей на прием. <a href="{% url 'doctor_list' %}">Записаться на прием</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,150 @@
+{% extends 'medical/base.html' %}
+
+{% block title %}Главная - Поликлиника{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <h1 class="display-4 mb-4">Добро пожаловать в нашу поликлинику</h1>
+        <p class="lead mb-4">Мы предоставляем качественные медицинские услуги для всей семьи</p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'doctor_list' %}" class="btn btn-primary btn-lg">Найти врача</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'appointment_list' %}" class="btn btn-outline-light btn-lg">Мои записи</a>
+            {% else %}
+                <a href="{% url 'register' %}" class="btn btn-outline-light btn-lg">Зарегистрироваться</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-4 mb-4">
+                <div class="p-4">
+                    <i class="fas fa-user-md fa-3x text-primary mb-3"></i>
+                    <h3>Квалифицированные специалисты</h3>
+                    <p class="text-muted">Наши врачи имеют многолетний опыт работы и постоянно повышают свою квалификацию.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="p-4">
+                    <i class="fas fa-calendar-check fa-3x text-primary mb-3"></i>
+                    <h3>Удобная запись на прием</h3>
+                    <p class="text-muted">Запишитесь к врачу онлайн в любое удобное для вас время.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="p-4">
+                    <i class="fas fa-heartbeat fa-3x text-primary mb-3"></i>
+                    <h3>Современное оборудование</h3>
+                    <p class="text-muted">Мы используем только современное медицинское оборудование для диагностики и лечения.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Departments Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">Наши отделения</h2>
+        <div class="row">
+            {% for department in departments %}
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <div class="department-icon">
+                                {% if forloop.counter == 1 %}
+                                    <i class="fas fa-heart"></i>
+                                {% elif forloop.counter == 2 %}
+                                    <i class="fas fa-brain"></i>
+                                {% elif forloop.counter == 3 %}
+                                    <i class="fas fa-tooth"></i>
+                                {% else %}
+                                    <i class="fas fa-stethoscope"></i>
+                                {% endif %}
+                            </div>
+                            <h5 class="card-title">{{ department.name }}</h5>
+                            <p class="card-text text-muted">{{ department.description|truncatechars:100 }}</p>
+                        </div>
+                        <div class="card-footer bg-white border-0 text-center">
+                            <a href="{% url 'department_detail' department.pk %}" class="btn btn-outline-primary w-100">Подробнее</a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12 text-center">
+                    <p>Отделения еще не добавлены.</p>
+                </div>
+            {% endfor %}
+            <div class="col-12 text-center mt-4">
+                <a href="{% url 'department_list' %}" class="btn btn-primary">Все отделения</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Doctors Section -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Наши врачи</h2>
+        <div class="row">
+            {% for doctor in doctors %}
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100 doctor-card">
+                        <div class="card-body text-center">
+                            {% if doctor.specialization == 'Терапевт' %}
+                                <i class="fas fa-stethoscope fa-4x text-primary mb-3"></i>
+                            {% elif doctor.specialization == 'Кардиолог' %}
+                                <i class="fas fa-heartbeat fa-4x text-primary mb-3"></i>
+                            {% elif doctor.specialization == 'Невролог' %}
+                                <i class="fas fa-brain fa-4x text-primary mb-3"></i>
+                            {% elif doctor.specialization == 'Хирург' %}
+                                <i class="fas fa-procedures fa-4x text-primary mb-3"></i>
+                            {% elif doctor.specialization == 'Педиатр' %}
+                                <i class="fas fa-baby fa-4x text-primary mb-3"></i>
+                            {% elif doctor.specialization == 'Психотерапевт' %}
+                                <i class="fas fa-comments fa-4x text-primary mb-3"></i>
+                            {% elif doctor.specialization == 'Инфекционист' %}
+                                <i class="fas fa-virus fa-4x text-primary mb-3"></i>
+                            {% elif doctor.specialization == 'Стоматолог' %}
+                                <i class="fas fa-tooth fa-4x text-primary mb-3"></i>
+                            {% elif doctor.specialization == 'Венеролог' %}
+                                <i class="fas fa-microscope fa-4x text-primary mb-3"></i>
+                            {% else %}
+                                <i class="fas fa-user-md fa-4x text-primary mb-3"></i>
+                            {% endif %}
+                            <h5 class="card-title">{{ doctor.full_name }}</h5>
+                            <p class="card-text text-muted">{{ doctor.specialization }}</p>
+                            <p class="card-text"><small class="text-muted">Опыт работы: {{ doctor.experience }} лет</small></p>
+                        </div>
+                        <div class="card-footer bg-white border-0">
+                            <a href="{% url 'doctor_detail' doctor.pk %}" class="btn btn-outline-primary w-100">Подробнее</a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12 text-center">
+                    <p>Врачи еще не добавлены.</p>
+                </div>
+            {% endfor %}
+            <div class="col-12 text-center mt-4">
+                <a href="{% url 'doctor_list' %}" class="btn btn-primary">Все врачи</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5 bg-primary text-white">
+    <div class="container text-center">
+        <h2 class="mb-4">Нужна консультация?</h2>
+        <p class="lead mb-4">Запишитесь на прием к нашим специалистам прямо сейчас</p>
+        <a href="{% url 'doctor_list' %}" class="btn btn-light btn-lg">Записаться на прием</a>
+    </div>
+</section>
+{% endblock %}
